@@ -13,7 +13,7 @@ import java.util.Map;
  *
  * @author Piotr Sztolf (piotr.sztolf@gmail.com) created: 2017-05-05 07:50:16
  */
-public class AbstractMotor {
+public class DefaultMotor implements Motor {
 
     int speed = 0;
     MotorRotation rotation = MotorRotation.NONE;
@@ -21,7 +21,7 @@ public class AbstractMotor {
     Map<MotorRotation, Integer> minSpeedMap = Maps.newHashMap();
     Map<MotorRotation, Double> minSpeedFactorMap = Maps.newHashMap();
 
-    public AbstractMotor(MotorController controller) {
+    public DefaultMotor(MotorController controller) {
         this.controller = controller;
         this.minSpeedMap.put(MotorRotation.LEFT, 0);
         this.minSpeedMap.put(MotorRotation.RIGHT, 0);
@@ -40,5 +40,39 @@ public class AbstractMotor {
     public void setMinSpeed(MotorRotation rotation, int minSpeed) {
         this.minSpeedMap.put(rotation, minSpeed);
         this.minSpeedFactorMap.put(rotation, (double) (controller.getMaxSpeed() - minSpeed) / (double) controller.getMaxSpeed());
+    }
+
+    @Override
+    public void setSpeed(int speed) {
+        controller.applySpeed(speed);
+        this.speed = speed;
+    }
+
+    @Override
+    public void setRotation(MotorRotation rotation) {
+        controller.applyRotation(rotation);
+        this.rotation = rotation;
+    }
+
+    @Override
+    public void reverse() {
+        controller.applyRotation(rotation.getOpposite());
+        this.rotation = rotation.getOpposite();
+    }
+
+    @Override
+    public void stop() {
+        controller.applySpeed(0);
+        this.speed = 0;
+    }
+
+    @Override
+    public int getSpeed() {
+        return speed;
+    }
+
+    @Override
+    public MotorRotation getRotation() {
+        return rotation;
     }
 }
